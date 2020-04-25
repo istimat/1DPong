@@ -132,14 +132,14 @@ void check_death()
   if (current_position == 0){
     p2_score++;
     if (p1_score > 0 || p2_score > 0) {
-      show_point(blue, 2);
+      show_point(white, 2);
       show_score();
    }
   }
    if (current_position == 31){
     p1_score++;
     if (p1_score > 0 || p2_score > 0) {
-      show_point(red, 1);
+      show_point(white, 1);
       show_score();
    }
   }
@@ -167,10 +167,10 @@ void show_point(RgbColor win, int player)
 void check_win()
 {
   if (p1_score >= max_score) {
-    celebration(blue);
+    celebration(red);
   }
   if (p2_score >= max_score) {
-    celebration(red);
+    celebration(blue);
   }
 }
 
