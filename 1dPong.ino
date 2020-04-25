@@ -23,7 +23,7 @@ int initial_velo = 100;
 int dot_speed;
 int velo_increment = 6;
 
-
+int max_score = 14;
 
 // three element pixels, in different order and speeds
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
@@ -84,9 +84,12 @@ void loop()
    else p2_primed = false;
 
 
-   //start moving from 1 to 2
+
    move_once(col, dot_speed, which_way);
+   
    check_death();
+   check_win();
+
    
    if (p1_primed == true) {
     if (digitalRead(p1_button) == HIGH && which_way == 2){
@@ -129,55 +132,80 @@ void check_death()
   if (current_position == 0){
     p2_score++;
     if (p1_score > 0 || p2_score > 0) {
+      show_point(blue, 2);
       show_score();
    }
   }
    if (current_position == 31){
     p1_score++;
     if (p1_score > 0 || p2_score > 0) {
+      show_point(red, 1);
       show_score();
    }
   }
 
 }
 
-void check_win()
+void show_point(RgbColor win, int player)
 {
-  if (p1_score >= 5) {
-    celebration();
+  if (player == 1){
+    for (int i=0; i <= PixelCount/2; i++) {
+      strip.SetPixelColor(i, win);
+    }
+    strip.Show();
+    delay(slow_animation);
   }
-  if (p2_score >= 5) {
-    celebration();
+    if (player == 2){
+    for (int i=PixelCount; i >= PixelCount/2; i--) {
+      strip.SetPixelColor(i, win);
+    }
+    strip.Show();
+    delay(slow_animation);
   }
-  dot_speed = initial_velo;
 }
 
-void celebration()
+void check_win()
+{
+  if (p1_score >= max_score) {
+    celebration(blue);
+  }
+  if (p2_score >= max_score) {
+    celebration(red);
+  }
+}
+
+void reset_score(){
+  p1_score = 0;
+  p2_score = 0;
+}
+
+void celebration(RgbColor winner)
 {
     set_all_leds(black);
-    delay(fast_animation);
-    set_all_leds(white);
-    delay(fast_animation);
+    delay(slow_animation);
+    set_all_leds(winner);
+    delay(slow_animation);
     set_all_leds(black);
-    delay(fast_animation);
-    set_all_leds(white);
-    delay(fast_animation);
+    delay(slow_animation);
+    set_all_leds(winner);
+    delay(slow_animation);
     set_all_leds(black);
-    delay(fast_animation);
-    set_all_leds(white);
-    delay(fast_animation);
+    delay(slow_animation);
+    set_all_leds(winner);
+    delay(slow_animation);
     set_all_leds(black);
 
+    reset_score();
 }
 
 void switch_direction()
 {
   speed_update();
-  if (which_way == 1) {
+  if (which_way == 1 && current_position > 15) {
     which_way = 2;
     col = blue;
   }
-  else {
+  if (which_way == 2 && current_position < 15) {
     which_way = 1;
     col = red;
   }
